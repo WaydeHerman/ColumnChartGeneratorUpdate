@@ -89,7 +89,7 @@ function columnChartViz(option) {
   const columnBars = option.columnBars;
   const isGrouped = option.hasOwnProperty("columnGrouping");
   const columnGrouping = option.columnGrouping;
-  const measuresLeft = option.measuresLeft;
+  var measuresLeft = option.measuresLeft;
   var measuresRight = option.measuresRight;
   const operationMeasure = option.operationMeasure || "avg";
   const paletteFill = option.paletteFill || "full";
@@ -102,7 +102,13 @@ function columnChartViz(option) {
   var isMultipleMeasure;
   if (measuresRight || option.measuresLeft.constructor === Array) {
     isMultipleMeasure = true;
-    measuresAll = JSON.parse(JSON.stringify(measuresLeft));
+    if (option.measuresLeft.constructor !== Array) {
+      measuresAll = [JSON.parse(JSON.stringify(measuresLeft))];
+      measuresLeft = [measuresLeft];
+    } else {
+      measuresAll = JSON.parse(JSON.stringify(measuresLeft));
+    }
+
     if (measuresRight) {
       if (option.measuresRight.constructor === Array) {
         measuresRight.forEach(function(v) {
@@ -122,13 +128,13 @@ function columnChartViz(option) {
     });
   } else {
     option.data.forEach(d => {
-      d[columnMeasure] = parseFloat(d[columnMeasure]);
+      d[measuresLeft] = parseFloat(d[measuresLeft]);
     });
   }
 
   // Process data
   if (!isMultipleMeasure) {
-    const allValuesLeft = [];
+    allValuesLeft = [];
     if (isGrouped) {
       var data = d3
         .nest()
@@ -187,7 +193,6 @@ function columnChartViz(option) {
       .rollup(function(v) {
         value = [];
         measuresLeft.forEach(function(w, i) {
-          console.log(w, i);
           var val = aggregate(v, operationMeasure, w);
           allValuesLeft.push(val);
           value.push(val);
@@ -196,7 +201,6 @@ function columnChartViz(option) {
           });
         });
         measuresRight.forEach(function(w, i) {
-          console.log(w, i);
           var val = aggregate(v, operationMeasure, w);
           allValuesRight.push(val);
           value.push(val);
@@ -207,8 +211,6 @@ function columnChartViz(option) {
 
     data = [{ key: "", values: data }];
   }
-
-  console.log(measuresRef);
 
   const groupKeys = data.map(function(d) {
     return d.key;
@@ -229,12 +231,12 @@ function columnChartViz(option) {
   const svg_height = 300;
   var margin = { top: 10, right: 50, bottom: 50, left: 50 };
 
-  console.log(svg_width);
-  console.log(measuresAll.length);
-  console.log(singleKeys.length);
-
   if (!isGrouped && isMultipleMeasure) {
     groupSpacing = 0;
+  } else {
+    if (!isGrouped) {
+      groupSpacing = 0;
+    }
   }
 
   const colorScale = d3
@@ -282,8 +284,6 @@ function columnChartViz(option) {
     .domain(groupKeys)
     .rangeRound([0, svg_width - margin.right - margin.left]);
 
-  console.log(x0.bandwidth());
-
   if (isMultipleMeasure) {
     var spacingUnit =
       x0.bandwidth() / (measuresAll.length * singleKeys.length * 1.5);
@@ -307,10 +307,13 @@ function columnChartViz(option) {
       .nice()
       .rangeRound([svg_height - margin.bottom, margin.top]);
   } else {
+    var spacingUnit = x0.bandwidth() / (singleKeys.length * 1.5);
+    bar_width = spacingUnit;
+    singleSpacing = spacingUnit * 0.5;
     x1 = d3
       .scaleBand()
       .domain(singleKeys)
-      .rangeRound([0, x0.bandwidth() - groupSpacing]);
+      .rangeRound([0, x0.bandwidth()]);
 
     yLeft = d3
       .scaleLinear()
@@ -332,7 +335,6 @@ function columnChartViz(option) {
         .attr("class", "test")
         .selectAll("rect")
         .data(function(d) {
-          console.log(d);
           d.values.forEach(function(v) {
             v.parentKey = d.key;
           });
@@ -346,15 +348,10 @@ function columnChartViz(option) {
             var obj = { value: v, key: d.key, parentKey: d.parentKey };
             new_data.push(obj);
           });
-          console.log(new_data);
           return new_data;
         })
         .join("rect")
         .attr("x", function(d, i) {
-          console.log(x1(d.key));
-          console.log(i * (bar_width + singleSpacing));
-          console.log(x1(d.key) + i * (bar_width + singleSpacing));
-          console.log("---");
           return x1(d.key) + i * (bar_width + singleSpacing);
         })
         .attr("y", d => yLeft(0))
@@ -465,7 +462,7 @@ function columnChartViz(option) {
           .attr("opacity", 0);
       })*/
         .attr("x", d => x1(d.key))
-        .attr("y", d => y(0))
+        .attr("y", d => yLeft(0))
         .attr("width", bar_width)
         .attr("height", d => 0)
         .attr("fill", function(d) {
@@ -489,7 +486,7 @@ function columnChartViz(option) {
       container
         .append("g")
         .attr("class", "y-axis")
-        .call(d3.axisLeft(y));
+        .call(d3.axisLeft(yLeft));
 
       container
         .append("g")
@@ -497,7 +494,7 @@ function columnChartViz(option) {
         .call(d3.axisBottom(x0))
         .attr(
           "transform",
-          "translate(" + -20 + "," + (svg_height - margin.bottom) + ")"
+          "translate(" + 0 + "," + (svg_height - margin.bottom) + ")"
         );
 
       container
@@ -554,7 +551,7 @@ function columnChartViz(option) {
         .duration(1000)
         .delay(500)
         .attr("y", function(d) {
-          return y(d.value) - 5;
+          return yLeft(d.value) - 5;
         })
         .attr("opacity", 1);
     } else {
@@ -564,10 +561,10 @@ function columnChartViz(option) {
         .duration(1000)
         .delay(500)
         .attr("height", function(d) {
-          return y(0) - y(d.value);
+          return yLeft(0) - yLeft(d.value);
         })
         .attr("y", function(d) {
-          return y(d.value);
+          return yLeft(d.value);
         });
 
       chartContainer
@@ -576,7 +573,7 @@ function columnChartViz(option) {
         .duration(1000)
         .delay(500)
         .attr("y", function(d) {
-          return y(d.value) - 5;
+          return yLeft(d.value) - 5;
         })
         .attr("opacity", 1);
     }
