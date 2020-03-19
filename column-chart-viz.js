@@ -320,10 +320,17 @@ function columnChartViz(option) {
     }
   }
 
-  const colorScale = d3
-    .scaleOrdinal()
-    .domain(singleKeys)
-    .range(colors[paletteFill]);
+  if (isMultipleMeasure) {
+    colorScale = d3
+      .scaleOrdinal()
+      .domain(measureList)
+      .range(colors[paletteFill]);
+  } else {
+    colorScale = d3
+      .scaleOrdinal()
+      .domain(singleKeys)
+      .range(colors[paletteFill]);
+  }
 
   // Render chart
   const container = d3.select(el).classed("column-chart-viz", true);
@@ -463,11 +470,11 @@ function columnChartViz(option) {
         .attr("y", d => yLeft(0))
         .attr("width", bar_width)
         .attr("height", d => 0)
-        .attr("fill", function(d) {
+        .attr("fill", function(d, i) {
           if (paletteFill === "pattern") {
-            return "url(#" + colorScale(d.key) + ")";
+            return "url(#" + colorScale(measureList[i]) + ")";
           } else {
-            return colorScale(d.key);
+            return colorScale(measureList[i]);
           }
         })
         .attr("class", function() {
