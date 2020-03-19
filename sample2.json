@@ -1,0 +1,226 @@
+[
+ {
+   "Location": "California",
+   "Time": "2011-2015",
+   "Sex": "Female",
+   "Unemployment Rate": 9.3,
+   "Percentage of Population with Private Insurance": 50.70537508
+ },
+ {
+   "Location": "California",
+   "Time": "2011-2015",
+   "Sex": "Male",
+   "Unemployment Rate": 9.2,
+   "Percentage of Population with Private Insurance": 49.29462492
+ },
+ {
+   "Location": "California",
+   "Time": "2012-2016",
+   "Sex": "Female",
+   "Unemployment Rate": 8.3,
+   "Percentage of Population with Private Insurance": 50.70335899
+ },
+ {
+   "Location": "California",
+   "Time": "2012-2016",
+   "Sex": "Male",
+   "Unemployment Rate": 8.1,
+   "Percentage of Population with Private Insurance": 49.29664101
+ },
+ {
+   "Location": "California",
+   "Time": "2013-2017",
+   "Sex": "Female",
+   "Unemployment Rate": 7.3,
+   "Percentage of Population with Private Insurance": 50.6864426
+ },
+ {
+   "Location": "California",
+   "Time": "2013-2017",
+   "Sex": "Male",
+   "Unemployment Rate": 7.1,
+   "Percentage of Population with Private Insurance": 49.3135574
+ },
+ {
+   "Location": "California",
+   "Time": "2014-2018",
+   "Sex": "Female",
+   "Unemployment Rate": 6.4,
+   "Percentage of Population with Private Insurance": null
+ },
+ {
+   "Location": "California",
+   "Time": "2014-2018",
+   "Sex": "Male",
+   "Unemployment Rate": 6.2,
+   "Percentage of Population with Private Insurance": null
+ },
+ {
+   "Location": "Oregon",
+   "Time": "2011-2015",
+   "Sex": "Female",
+   "Unemployment Rate": 8.1,
+   "Percentage of Population with Private Insurance": 50.78529347
+ },
+ {
+   "Location": "Oregon",
+   "Time": "2011-2015",
+   "Sex": "Male",
+   "Unemployment Rate": 9.3,
+   "Percentage of Population with Private Insurance": 49.21470653
+ },
+ {
+   "Location": "Oregon",
+   "Time": "2012-2016",
+   "Sex": "Female",
+   "Unemployment Rate": 7.1,
+   "Percentage of Population with Private Insurance": 50.73304182
+ },
+ {
+   "Location": "Oregon",
+   "Time": "2012-2016",
+   "Sex": "Male",
+   "Unemployment Rate": 7.9,
+   "Percentage of Population with Private Insurance": 49.26695818
+ },
+ {
+   "Location": "Oregon",
+   "Time": "2013-2017",
+   "Sex": "Female",
+   "Unemployment Rate": 6,
+   "Percentage of Population with Private Insurance": 50.70614768
+ },
+ {
+   "Location": "Oregon",
+   "Time": "2013-2017",
+   "Sex": "Male",
+   "Unemployment Rate": 6.7,
+   "Percentage of Population with Private Insurance": 49.29385232
+ },
+ {
+   "Location": "Oregon",
+   "Time": "2014-2018",
+   "Sex": "Female",
+   "Unemployment Rate": 5.3,
+   "Percentage of Population with Private Insurance": null
+ },
+ {
+   "Location": "Oregon",
+   "Time": "2014-2018",
+   "Sex": "Male",
+   "Unemployment Rate": 5.7,
+   "Percentage of Population with Private Insurance": null
+ },
+ {
+   "Location": "United States",
+   "Time": "2011-2015",
+   "Sex": "Female",
+   "Unemployment Rate": 7.5,
+   "Percentage of Population with Private Insurance": 51.1679423
+ },
+ {
+   "Location": "United States",
+   "Time": "2011-2015",
+   "Sex": "Male",
+   "Unemployment Rate": 7.9,
+   "Percentage of Population with Private Insurance": 48.8320577
+ },
+ {
+   "Location": "United States",
+   "Time": "2012-2016",
+   "Sex": "Female",
+   "Unemployment Rate": 6.7,
+   "Percentage of Population with Private Insurance": 51.15606007
+ },
+ {
+   "Location": "United States",
+   "Time": "2012-2016",
+   "Sex": "Male",
+   "Unemployment Rate": 7,
+   "Percentage of Population with Private Insurance": 48.84393993
+ },
+ {
+   "Location": "United States",
+   "Time": "2013-2017",
+   "Sex": "Female",
+   "Unemployment Rate": 6,
+   "Percentage of Population with Private Insurance": 51.13728675
+ },
+ {
+   "Location": "United States",
+   "Time": "2013-2017",
+   "Sex": "Male",
+   "Unemployment Rate": 6.2,
+   "Percentage of Population with Private Insurance": 48.86271325
+ },
+ {
+   "Location": "United States",
+   "Time": "2014-2018",
+   "Sex": "Female",
+   "Unemployment Rate": 5.4,
+   "Percentage of Population with Private Insurance": null
+ },
+ {
+   "Location": "United States",
+   "Time": "2014-2018",
+   "Sex": "Male",
+   "Unemployment Rate": 5.5,
+   "Percentage of Population with Private Insurance": null
+ },
+ {
+   "Location": "Washington",
+   "Time": "2011-2015",
+   "Sex": "Female",
+   "Unemployment Rate": 7,
+   "Percentage of Population with Private Insurance": 50.4714012
+ },
+ {
+   "Location": "Washington",
+   "Time": "2011-2015",
+   "Sex": "Male",
+   "Unemployment Rate": 7.5,
+   "Percentage of Population with Private Insurance": 49.5285988
+ },
+ {
+   "Location": "Washington",
+   "Time": "2012-2016",
+   "Sex": "Female",
+   "Unemployment Rate": 6.1,
+   "Percentage of Population with Private Insurance": 50.48573661
+ },
+ {
+   "Location": "Washington",
+   "Time": "2012-2016",
+   "Sex": "Male",
+   "Unemployment Rate": 6.5,
+   "Percentage of Population with Private Insurance": 49.51426339
+ },
+ {
+   "Location": "Washington",
+   "Time": "2013-2017",
+   "Sex": "Female",
+   "Unemployment Rate": 5.4,
+   "Percentage of Population with Private Insurance": 50.43801302
+ },
+ {
+   "Location": "Washington",
+   "Time": "2013-2017",
+   "Sex": "Male",
+   "Unemployment Rate": 5.7,
+   "Percentage of Population with Private Insurance": 49.56198698
+ },
+ {
+   "Location": "Washington",
+   "Time": "2014-2018",
+   "Sex": "Female",
+   "Unemployment Rate": 4.8,
+   "Percentage of Population with Private Insurance": null
+ },
+ {
+   "Location": "Washington",
+   "Time": "2014-2018",
+   "Sex": "Male",
+   "Unemployment Rate": 5,
+   "Percentage of Population with Private Insurance": null
+ }
+]

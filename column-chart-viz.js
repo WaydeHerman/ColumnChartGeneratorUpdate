@@ -4,8 +4,29 @@ function columnChartViz(option) {
   const positionLegends = ["top", "bottom"];
   const sortOrders = ["atoz", "ztoa"];
   // Verify options
-  if (!operationMeasures.includes(option.operationMeasure)) {
-    throw Error("Calc can only be sum, avg, or count.");
+  if (option.measuresLeft.constructor === Array) {
+    option.measuresLeft.forEach(function(v) {
+      if (!operationMeasures.includes(v.operation)) {
+        throw Error("Calc can only be sum, avg, or count.");
+      }
+    });
+  } else {
+    if (!operationMeasures.includes(option.measuresLeft.operation)) {
+      throw Error("Calc can only be sum, avg, or count.");
+    }
+  }
+  if (option.measuresRight) {
+    if (option.measuresRight.constructor === Array) {
+      option.measuresRight.forEach(function(v) {
+        if (!operationMeasures.includes(v.operation)) {
+          throw Error("Calc can only be sum, avg, or count.");
+        }
+      });
+    } else {
+      if (!operationMeasures.includes(option.measuresRight.operation)) {
+        throw Error("Calc can only be sum, avg, or count.");
+      }
+    }
   }
   if (!paletteFills.includes(option.paletteFill)) {
     throw Error("Fill can only be full, single, or pattern.");
@@ -91,7 +112,6 @@ function columnChartViz(option) {
   const columnGrouping = option.columnGrouping;
   var measuresLeft = option.measuresLeft;
   var measuresRight = option.measuresRight;
-  const operationMeasure = option.operationMeasure || "avg";
   const paletteFill = option.paletteFill || "full";
   const positionLegend = option.positionLegend || "top";
   const sortOrder = option.sortOrder || "atoz";
@@ -100,6 +120,7 @@ function columnChartViz(option) {
   const labelYRightAxis = option.labelYRightAxis || "";
 
   var isMultipleMeasure;
+  var measureList = [];
   if (measuresRight || option.measuresLeft.constructor === Array) {
     isMultipleMeasure = true;
     if (option.measuresLeft.constructor !== Array) {
@@ -108,27 +129,33 @@ function columnChartViz(option) {
     } else {
       measuresAll = JSON.parse(JSON.stringify(measuresLeft));
     }
+    measuresLeft.forEach(function(v) {
+      measureList.push(v.measure);
+    });
 
     if (measuresRight) {
       if (option.measuresRight.constructor === Array) {
         measuresRight.forEach(function(v) {
           measuresAll.push(v);
+          measureList.push(v.measure);
         });
       } else {
         measuresRight = [measuresRight];
         measuresRight.forEach(function(v) {
           measuresAll.push(v);
+          measureList.push(v.measure);
         });
       }
     }
     option.data.forEach(d => {
       measuresAll.forEach(function(v) {
-        d[v] = parseFloat(d[v]);
+        d[v.measure] = parseFloat(d[v.measure]);
       });
     });
   } else {
     option.data.forEach(d => {
-      d[measuresLeft] = parseFloat(d[measuresLeft]);
+      d[measuresLeft.measure] = parseFloat(d[measuresLeft.measure]);
+      measureList.push(measuresLeft.measure);
     });
   }
 
@@ -147,7 +174,11 @@ function columnChartViz(option) {
         })
         .sortKeys(sortBars(sortOrder))
         .rollup(function(v) {
-          const value = aggregate(v, operationMeasure, measuresLeft);
+          const value = aggregate(
+            v,
+            measuresLeft.operation,
+            measuresLeft.measure
+          );
           allValuesLeft.push(value);
           return value;
         })
@@ -160,7 +191,11 @@ function columnChartViz(option) {
         })
         .sortKeys(sortBars(sortOrder))
         .rollup(function(v) {
-          const value = aggregate(v, operationMeasure, measuresLeft);
+          const value = aggregate(
+            v,
+            measuresLeft.operation,
+            measuresLeft.measure
+          );
           allValuesLeft.push(value);
           return value;
         })
@@ -169,47 +204,93 @@ function columnChartViz(option) {
       data = [{ key: "", values: data }];
     }
   } else {
-    allValuesLeft = [];
-    allValuesRight = [];
-    measuresRef = [];
+    if (isGrouped) {
+      allValuesLeft = [];
+      allValuesRight = [];
+      measuresRef = [];
 
-    var ColumnBarNest = d3
-      .nest()
-      .key(function(d) {
-        return d[columnBars];
-      })
-      .entries(option.data);
+      var ColumnBarNest = d3
+        .nest()
+        .key(function(d) {
+          return d[columnBars];
+        })
+        .entries(option.data);
 
-    var keys = ColumnBarNest.map(function(d) {
-      return d.key;
-    });
+      var keys = ColumnBarNest.map(function(d) {
+        return d.key;
+      });
 
-    var data = d3
-      .nest()
-      .key(function(d) {
-        return d[columnBars];
-      })
-      .sortKeys(sortBars(sortOrder))
-      .rollup(function(v) {
-        value = [];
-        measuresLeft.forEach(function(w, i) {
-          var val = aggregate(v, operationMeasure, w);
-          allValuesLeft.push(val);
-          value.push(val);
-          keys.forEach(function(w, index) {
-            measuresRef.push(i + index * keys.length);
+      var data = d3
+        .nest()
+        .key(function(d) {
+          return d[columnGrouping];
+        })
+        .sortKeys(sortBars(sortOrder))
+        .key(function(d) {
+          return d[columnBars];
+        })
+        .sortKeys(sortBars(sortOrder))
+        .rollup(function(v) {
+          value = [];
+          measuresLeft.forEach(function(w, i) {
+            var val = aggregate(v, w.operation, w.measure);
+            allValuesLeft.push(val);
+            value.push(val);
+            keys.forEach(function(w, index) {
+              measuresRef.push(i + index * keys.length);
+            });
           });
-        });
-        measuresRight.forEach(function(w, i) {
-          var val = aggregate(v, operationMeasure, w);
-          allValuesRight.push(val);
-          value.push(val);
-        });
-        return value;
-      })
-      .entries(option.data);
+          measuresRight.forEach(function(w, i) {
+            var val = aggregate(v, w.operation, w.measure);
+            allValuesRight.push(val);
+            value.push(val);
+          });
+          return value;
+        })
+        .entries(option.data);
+    } else {
+      allValuesLeft = [];
+      allValuesRight = [];
+      measuresRef = [];
 
-    data = [{ key: "", values: data }];
+      var ColumnBarNest = d3
+        .nest()
+        .key(function(d) {
+          return d[columnBars];
+        })
+        .entries(option.data);
+
+      var keys = ColumnBarNest.map(function(d) {
+        return d.key;
+      });
+
+      var data = d3
+        .nest()
+        .key(function(d) {
+          return d[columnBars];
+        })
+        .sortKeys(sortBars(sortOrder))
+        .rollup(function(v) {
+          value = [];
+          measuresLeft.forEach(function(w, i) {
+            var val = aggregate(v, w.operation, w.measure);
+            allValuesLeft.push(val);
+            value.push(val);
+            keys.forEach(function(w, index) {
+              measuresRef.push(i + index * keys.length);
+            });
+          });
+          measuresRight.forEach(function(w, i) {
+            var val = aggregate(v, w.operation, w.measure);
+            allValuesRight.push(val);
+            value.push(val);
+          });
+          return value;
+        })
+        .entries(option.data);
+
+      data = [{ key: "", values: data }];
+    }
   }
 
   const groupKeys = data.map(function(d) {
@@ -285,27 +366,52 @@ function columnChartViz(option) {
     .rangeRound([0, svg_width - margin.right - margin.left]);
 
   if (isMultipleMeasure) {
-    var spacingUnit =
-      x0.bandwidth() / (measuresAll.length * singleKeys.length * 1.5);
-    bar_width = spacingUnit;
-    singleSpacing = spacingUnit * 0.5;
+    if (isGrouped) {
+      var spacingUnit =
+        x0.bandwidth() / (measuresAll.length * singleKeys.length * 1.5 + 1.5);
+      bar_width = spacingUnit;
+      singleSpacing = spacingUnit * 0.5;
+      groupSpacing = spacingUnit * 1.5;
 
-    x1 = d3
-      .scaleBand()
-      .domain(singleKeys)
-      .rangeRound([0, x0.bandwidth()]);
+      x1 = d3
+        .scaleBand()
+        .domain(singleKeys)
+        .rangeRound([singleSpacing, x0.bandwidth() - groupSpacing]);
 
-    yLeft = d3
-      .scaleLinear()
-      .domain([0, maxValueLeft])
-      .nice()
-      .rangeRound([svg_height - margin.bottom, margin.top]);
+      yLeft = d3
+        .scaleLinear()
+        .domain([0, maxValueLeft])
+        .nice()
+        .rangeRound([svg_height - margin.bottom, margin.top]);
 
-    yRight = d3
-      .scaleLinear()
-      .domain([0, maxValueRight])
-      .nice()
-      .rangeRound([svg_height - margin.bottom, margin.top]);
+      yRight = d3
+        .scaleLinear()
+        .domain([0, maxValueRight])
+        .nice()
+        .rangeRound([svg_height - margin.bottom, margin.top]);
+    } else {
+      var spacingUnit =
+        x0.bandwidth() / (measuresAll.length * singleKeys.length * 1.5);
+      bar_width = spacingUnit;
+      singleSpacing = spacingUnit * 0.5;
+
+      x1 = d3
+        .scaleBand()
+        .domain(singleKeys)
+        .rangeRound([0, x0.bandwidth()]);
+
+      yLeft = d3
+        .scaleLinear()
+        .domain([0, maxValueLeft])
+        .nice()
+        .rangeRound([svg_height - margin.bottom, margin.top]);
+
+      yRight = d3
+        .scaleLinear()
+        .domain([0, maxValueRight])
+        .nice()
+        .rangeRound([svg_height - margin.bottom, margin.top]);
+    }
   } else {
     var spacingUnit = x0.bandwidth() / (singleKeys.length * 1.5);
     bar_width = spacingUnit;
@@ -369,8 +475,8 @@ function columnChartViz(option) {
             return "pattern-fill";
           }
         })
-        .on("mouseover", function(d) {
-          showTooltip(d, data);
+        .on("mouseover", function(d, i) {
+          showTooltip(d, i);
         })
         .on("mousemove", moveTooltip)
         .on("mouseout", hideTooltip);
@@ -477,8 +583,8 @@ function columnChartViz(option) {
             return "pattern-fill";
           }
         })
-        .on("mouseover", function(d) {
-          showTooltip(d, data);
+        .on("mouseover", function(d, i) {
+          showTooltip(d, i);
         })
         .on("mousemove", moveTooltip)
         .on("mouseout", hideTooltip);
@@ -581,6 +687,7 @@ function columnChartViz(option) {
 
   // Tooltip
   const tooltip = container.append("div").attr("class", "chart-tooltip");
+  tooltip.append("div").attr("class", "tooltip-measure-label");
   tooltip.append("div").attr("class", "tooltip-outer-group-label");
   tooltip.append("div").attr("class", "tooltip-inner-group-label");
   tooltip.append("div").attr("class", "tooltip-inner-group-value");
@@ -603,14 +710,34 @@ function columnChartViz(option) {
     tooltip.style("transform", `translate(${x}px,${y}px)`);
   }
 
-  function showTooltip(d) {
+  function showTooltip(d, i) {
+    tooltip.select(".tooltip-measure-label").text(measureList[i]);
     tooltip.select(".tooltip-outer-group-label").text(d.parentKey);
     tooltip.select(".tooltip-inner-group-label").text(d.key);
     tooltip.select(".tooltip-inner-group-value").text(formatNumber(d.value));
+
+    indices = [];
+    d3.selectAll("rect").style("opacity", function(v, index) {
+      if (v.parentKey === d.parentKey && v.key === d.key) {
+        indices.push(index);
+      }
+    });
+    d3.selectAll("rect").style("opacity", function(v, index) {
+      if (v.parentKey === d.parentKey && v.key === d.key) {
+        if (indices[i] === index) {
+          return 1;
+        } else {
+          return 0.6;
+        }
+      } else {
+        return 0.6;
+      }
+    });
+
     tooltip
       .style(
         "border-color",
-        paletteFill === "pattern" ? "#119eb9" : colorScale(d[0])
+        paletteFill === "pattern" ? "#119eb9" : colorScale(d.key)
       )
       .transition()
       .style("opacity", 1);
@@ -620,6 +747,7 @@ function columnChartViz(option) {
 
   function hideTooltip() {
     tooltip.transition().style("opacity", 0);
+    d3.selectAll("rect").style("opacity", 1);
   }
 
   // Render legend

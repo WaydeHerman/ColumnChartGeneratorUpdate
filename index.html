@@ -39,20 +39,14 @@
     </div>
 
     <script>
-     d3.json("sample.json").then(function(data) {
-
-        data.forEach(function(d) {
-         d["ValueAlt"] = Math.random()*100
-         d["ValueOther"] = Math.random()*30
-       })
-
+     d3.json("sample2.json").then(function(data) {
         columnChartViz({
         el: document.getElementsByClassName("chart")[1],
         data,
-        columnBars: "Years",
-        measuresLeft: ["Value", "ValueAlt"],
-        measuresRight: "ValueOther",
-        operationMeasure: "avg",
+        columnBars: "Time",
+        columnGrouping: "Location",
+        measuresLeft: {measure: "Unemployment Rate", operation: "avg"},
+        measuresRight: {measure: "Percentage of Population with Private Insurance", operation: "avg"},
         paletteFill: "full",
         positionLegend: "top",
         sortOrder: "ztoa",
