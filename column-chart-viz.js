@@ -538,12 +538,16 @@ function columnChartViz(option) {
         .attr("class", "x-axis axis-label")
         .text(labelXAxis);
 
+      var yAxisWidth = document
+        .getElementsByClassName("y-axis")[0]
+        .getBoundingClientRect().width;
+      console.log(yAxisWidth);
       container
         .append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", 0 - margin.left)
+        .attr("y", 0 - yAxisWidth)
         .attr("x", 0 - (svg_height - margin.bottom - margin.top) / 2)
-        .attr("dy", "1em")
+        .attr("dy", "-0.2em")
         .attr("class", "y-axis axis-label")
         .text(labelYLeftAxis);
     } else {
